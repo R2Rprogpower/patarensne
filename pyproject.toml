@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=75"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "telegram-chat-nodes"
+version = "0.1.0"
+description = "Read-only Telegram group discovery and activity scanning nodes"
+requires-python = ">=3.12"
+dependencies = [
+  "httpx>=0.28,<1",
+  "telethon>=1.40,<2",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.3,<9",
+  "pytest-asyncio>=0.25,<1",
+]
+
+[project.scripts]
+chat-discovery = "chat_discovery.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"

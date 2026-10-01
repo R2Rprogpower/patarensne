@@ -1,0 +1,52 @@
+services:
+  discovery:
+    build:
+      context: .
+      target: final
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      DATA_DIR: /app/data
+      CONFIG_DIR: /app/config
+      DATABASE_PATH: /app/data/discovery.sqlite3
+      TELEGRAM_SESSION_PATH: /app/data/telegram.session
+    volumes:
+      - ./data:/app/data
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    init: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    networks:
+      - backend
+
+  test:
+    build:
+      context: .
+      target: test
+    profiles: ["test"]
+
+  searxng:
+    image: searxng/searxng:latest
+    profiles: ["web-search"]
+    environment:
+      SEARXNG_SECRET: ${SEARXNG_SECRET:-}
+    volumes:
+      - ./ops/searxng/settings.yml:/etc/searxng/settings.yml:ro
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+      - /var/cache/searxng:size=64m
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    networks:
+      - backend
+
+networks:
+  backend:
